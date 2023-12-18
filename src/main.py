@@ -71,7 +71,10 @@ def sensors_add(sensor_id: int, sensor_type: int, sensor_name: str = None):
 
 @app.post("/sensors/drop")
 def sensors_drop():
-    return [{"sensors": sensors.drop()}]
+    try:
+        return [{"events": sensors.drop()}]
+    except Exception as _ex:
+        raise HTTPException(status_code=400, detail="Cant drop")
 
 @app.get("/")
 def test_task():
