@@ -2,3 +2,4 @@ __pycache__
 src/config.py
 README.md
 .venv
+src\config.py

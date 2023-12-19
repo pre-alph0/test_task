@@ -1,4 +1,4 @@
 host = '127.0.0.1' #local
-user = your_value
-password = your_value
-db_name = your_value
+user = "postgres"
+password = "1162"
+db_name = "postgres"

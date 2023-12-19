@@ -20,13 +20,22 @@ def events_add(sensor_id: int, name: str, temperature: int = None, humidity: int
         raise HTTPException(status_code=400, detail=result[0]["sensors"])
     else:
         return result
+    
+@app.delete("/events/delete")
+def events_delete(event_id: int):
+    result = events.delete(event_id)
+    if "events" in result[0]: #if return [{"events" : 'No such event with id = {event_id}'}]
+        raise HTTPException(status_code=400, detail=result[0]["events"])
+    else:
+        return result
 
 @app.post("/events/add_json")
 def events_add_json(item : Item):
     result_list = []
     for row in item.all_rows:
-        result_list.append(events_add(row["sensor_id"], row["name"], row["temperature"] if "temperature" in row else None, row["humidity"] if "humidity" in row else None)[0])
-    return result_list#events.add(sensor_id, name, temperature, humidity)
+        result_list.append(events.add(row["sensor_id"], row["name"], row["temperature"] if "temperature" in row else None, row["humidity"] if "humidity" in row else None)[0])
+        print(result_list)
+    return result_list
 
 @app.get("/events/show_all")
 def events_show_all(start: int = 0, limit: int = None):
@@ -43,7 +52,7 @@ def events_filter_temp_hum(filter_temperature: str = "> 0", filter_humidity: str
     except Exception as _ex:
         raise HTTPException(status_code=400, detail="Bad filter_temperature or filter_humidity")
 
-@app.post("/events/drop")
+@app.delete("/events/drop")
 def events_drop():
     try:
         return [{"events": events.drop()}]
@@ -68,8 +77,16 @@ def sensors_add(sensor_id: int, sensor_type: int, sensor_name: str = None):
             raise HTTPException(status_code=400, detail='id already exist')
         else:
             return result
+        
+@app.delete("/sensors/delete")
+def sensors_delete(sensor_id: int):
+    result = sensors.delete(sensor_id)
+    if "sensors" in result[0]: #if return [{"sensors" : 'No such sensor with id = {sensor_id}'}]
+        raise HTTPException(status_code=400, detail=result[0]["sensors"])
+    else:
+        return result
 
-@app.post("/sensors/drop")
+@app.delete("/sensors/drop")
 def sensors_drop():
     try:
         return [{"events": sensors.drop()}]

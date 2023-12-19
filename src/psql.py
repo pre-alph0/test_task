@@ -47,6 +47,20 @@ class events_table():
             fetch = cursor.fetchone()
             fetch_result = [fetch[1:]] #skip id which is not needed
             return self.json_result(fetch_result)
+        
+    def delete(self, event_id):
+        cursor.execute(""" SELECT id
+                       FROM events
+                       WHERE id = %s;""",   (event_id, ))
+        if cursor.fetchone() is None: return [{'events' : f'No such event with id = {event_id}'}]  #no id in events 
+        else: 
+            cursor.execute(f""" DELETE 
+                                FROM events
+                                WHERE id = {event_id}
+                                RETURNING *; """)
+            fetch = cursor.fetchone()
+            fetch_result = [fetch[1:]] #skip id which is not needed
+            return self.json_result(fetch_result)
     
     def show_all(self, start, limit):
         if limit is None: cursor.execute(f"""SELECT events.sensor_id, events.name, events.temperature, events.humidity, sensors.type AS sensor_type, sensors.name AS sensor_name 
@@ -127,6 +141,21 @@ class sensors_table():
             return None 
         else:
             return self.json_result([fetch])
+        
+    def delete(self, sensor_id):
+        cursor.execute(""" SELECT id
+                       FROM sensors
+                       WHERE id = %s;""",   (sensor_id, ))
+        if cursor.fetchone() is None: 
+            return [{'sensors' : f'No such sensor with id = {sensor_id}'}]  #no id in sensors 
+        else: 
+            cursor.execute(f""" DELETE 
+                                FROM sensors
+                                WHERE id = {sensor_id}
+                                RETURNING *; """)
+            fetch = cursor.fetchone()
+            fetch_result = [fetch] #skip id which is not needed
+            return self.json_result(fetch_result)
         
     def show_all(self, start, limit):
         if limit is None: cursor.execute(f"""SELECT id, name, type
